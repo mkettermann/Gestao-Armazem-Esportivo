@@ -57,6 +57,8 @@ builder.Services.AddOpenTelemetry()
             builder.Configuration["Observabilidade:OtlpEndpoint"] ?? "http://localhost:4317")))
     .WithMetrics(metrics => metrics
         .AddAspNetCoreInstrumentation()
+        .AddRuntimeInstrumentation()
+        .AddProcessInstrumentation()
         .AddOtlpExporter(opts => opts.Endpoint = new Uri(
             builder.Configuration["Observabilidade:OtlpEndpoint"] ?? "http://localhost:4317")));
 
