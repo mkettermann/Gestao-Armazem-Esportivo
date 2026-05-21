@@ -1,0 +1,542 @@
+{
+	"__inputs": [],
+	"__requires": [],
+	"annotations": {
+		"list": []
+	},
+	"description": "Rastreamento distribuído das APIs do Gestão Armazém via Jaeger — traces, latências e dependências",
+	"editable": true,
+	"fiscalYearStartMonth": 0,
+	"graphTooltip": 0,
+	"id": null,
+	"links": [
+		{
+			"asDropdown": false,
+			"icon": "external link",
+			"includeVars": false,
+			"keepTime": false,
+			"tags": [],
+			"targetBlank": true,
+			"title": "Abrir Jaeger UI",
+			"tooltip": "Acesso direto à interface do Jaeger",
+			"type": "link",
+			"url": "http://localhost:16686"
+		}
+	],
+	"panels": [
+		{
+			"collapsed": false,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 0
+			},
+			"id": 200,
+			"title": "🗺️ Mapa de Dependências entre Serviços",
+			"type": "row"
+		},
+		{
+			"datasource": {
+				"type": "jaeger",
+				"uid": "${jaeger_ds}"
+			},
+			"fieldConfig": {
+				"defaults": {},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 10,
+				"w": 24,
+				"x": 0,
+				"y": 1
+			},
+			"id": 201,
+			"options": {},
+			"targets": [
+				{
+					"queryType": "dependencyGraph",
+					"refId": "A",
+					"datasource": {
+						"type": "jaeger",
+						"uid": "${jaeger_ds}"
+					}
+				}
+			],
+			"title": "Grafo de Dependências dos Serviços",
+			"description": "Exibe as relações entre os serviços com base nos traces coletados. Requer tráfego entre os serviços para popular o grafo.",
+			"type": "nodeGraph"
+		},
+		{
+			"collapsed": false,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 11
+			},
+			"id": 210,
+			"title": "🔍 Traces por Serviço",
+			"type": "row"
+		},
+		{
+			"datasource": {
+				"type": "jaeger",
+				"uid": "${jaeger_ds}"
+			},
+			"fieldConfig": {
+				"defaults": {},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 10,
+				"w": 12,
+				"x": 0,
+				"y": 12
+			},
+			"id": 211,
+			"options": {
+				"dedupStrategy": "none",
+				"enableLogDetails": true,
+				"showLabels": false,
+				"showTime": false,
+				"sortOrder": "Descending",
+				"wrapLogMessage": false
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "jaeger",
+						"uid": "${jaeger_ds}"
+					},
+					"queryType": "search",
+					"refId": "A",
+					"service": "Identidade.Api",
+					"limit": 20
+				}
+			],
+			"title": "Traces — Identidade.Api",
+			"type": "traces"
+		},
+		{
+			"datasource": {
+				"type": "jaeger",
+				"uid": "${jaeger_ds}"
+			},
+			"fieldConfig": {
+				"defaults": {},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 10,
+				"w": 12,
+				"x": 12,
+				"y": 12
+			},
+			"id": 212,
+			"options": {
+				"dedupStrategy": "none",
+				"enableLogDetails": true,
+				"showLabels": false,
+				"showTime": false,
+				"sortOrder": "Descending",
+				"wrapLogMessage": false
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "jaeger",
+						"uid": "${jaeger_ds}"
+					},
+					"queryType": "search",
+					"refId": "A",
+					"service": "Catalogo.Api",
+					"limit": 20
+				}
+			],
+			"title": "Traces — Catalogo.Api",
+			"type": "traces"
+		},
+		{
+			"datasource": {
+				"type": "jaeger",
+				"uid": "${jaeger_ds}"
+			},
+			"fieldConfig": {
+				"defaults": {},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 10,
+				"w": 12,
+				"x": 0,
+				"y": 22
+			},
+			"id": 213,
+			"options": {
+				"dedupStrategy": "none",
+				"enableLogDetails": true,
+				"showLabels": false,
+				"showTime": false,
+				"sortOrder": "Descending",
+				"wrapLogMessage": false
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "jaeger",
+						"uid": "${jaeger_ds}"
+					},
+					"queryType": "search",
+					"refId": "A",
+					"service": "Estoque.Api",
+					"limit": 20
+				}
+			],
+			"title": "Traces — Estoque.Api",
+			"type": "traces"
+		},
+		{
+			"datasource": {
+				"type": "jaeger",
+				"uid": "${jaeger_ds}"
+			},
+			"fieldConfig": {
+				"defaults": {},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 10,
+				"w": 12,
+				"x": 12,
+				"y": 22
+			},
+			"id": 214,
+			"options": {
+				"dedupStrategy": "none",
+				"enableLogDetails": true,
+				"showLabels": false,
+				"showTime": false,
+				"sortOrder": "Descending",
+				"wrapLogMessage": false
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "jaeger",
+						"uid": "${jaeger_ds}"
+					},
+					"queryType": "search",
+					"refId": "A",
+					"service": "Pedidos.Api",
+					"limit": 20
+				}
+			],
+			"title": "Traces — Pedidos.Api",
+			"type": "traces"
+		},
+		{
+			"collapsed": false,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 32
+			},
+			"id": 220,
+			"title": "⏱️ Latência dos Traces por Operação",
+			"type": "row"
+		},
+		{
+			"datasource": {
+				"type": "jaeger",
+				"uid": "${jaeger_ds}"
+			},
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "palette-classic"
+					},
+					"custom": {
+						"lineWidth": 2
+					},
+					"unit": "µs",
+					"thresholds": {
+						"mode": "absolute",
+						"steps": [
+							{
+								"color": "green",
+								"value": null
+							},
+							{
+								"color": "yellow",
+								"value": 500000
+							},
+							{
+								"color": "red",
+								"value": 1000000
+							}
+						]
+					}
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 9,
+				"w": 12,
+				"x": 0,
+				"y": 33
+			},
+			"id": 221,
+			"options": {
+				"legend": {
+					"calcs": [
+						"mean",
+						"max"
+					],
+					"displayMode": "table",
+					"placement": "bottom"
+				},
+				"tooltip": {
+					"mode": "multi"
+				}
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "jaeger",
+						"uid": "${jaeger_ds}"
+					},
+					"queryType": "search",
+					"refId": "A",
+					"service": "Catalogo.Api",
+					"limit": 100
+				}
+			],
+			"title": "Duração dos Traces — Catalogo.Api",
+			"description": "Cada ponto representa um trace. Acesse o Explore para ver o span detalhado.",
+			"type": "traces"
+		},
+		{
+			"datasource": {
+				"type": "jaeger",
+				"uid": "${jaeger_ds}"
+			},
+			"fieldConfig": {
+				"defaults": {
+					"color": {
+						"mode": "palette-classic"
+					},
+					"custom": {
+						"lineWidth": 2
+					},
+					"unit": "µs"
+				},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 9,
+				"w": 12,
+				"x": 12,
+				"y": 33
+			},
+			"id": 222,
+			"options": {
+				"legend": {
+					"calcs": [
+						"mean",
+						"max"
+					],
+					"displayMode": "table",
+					"placement": "bottom"
+				},
+				"tooltip": {
+					"mode": "multi"
+				}
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "jaeger",
+						"uid": "${jaeger_ds}"
+					},
+					"queryType": "search",
+					"refId": "A",
+					"service": "Pedidos.Api",
+					"limit": 100
+				}
+			],
+			"title": "Duração dos Traces — Pedidos.Api",
+			"type": "traces"
+		},
+		{
+			"collapsed": false,
+			"gridPos": {
+				"h": 1,
+				"w": 24,
+				"x": 0,
+				"y": 42
+			},
+			"id": 230,
+			"title": "🔎 Busca Livre de Traces",
+			"type": "row"
+		},
+		{
+			"datasource": {
+				"type": "jaeger",
+				"uid": "${jaeger_ds}"
+			},
+			"fieldConfig": {
+				"defaults": {},
+				"overrides": []
+			},
+			"gridPos": {
+				"h": 10,
+				"w": 24,
+				"x": 0,
+				"y": 43
+			},
+			"id": 231,
+			"options": {
+				"dedupStrategy": "none",
+				"enableLogDetails": true,
+				"showLabels": true,
+				"showTime": true,
+				"sortOrder": "Descending",
+				"wrapLogMessage": false
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "jaeger",
+						"uid": "${jaeger_ds}"
+					},
+					"queryType": "search",
+					"refId": "A",
+					"service": "$service",
+					"operation": "$operation",
+					"limit": 50,
+					"minDuration": "$min_duration",
+					"tags": "$tags"
+				}
+			],
+			"title": "Traces Filtrados — $service / $operation",
+			"description": "Use as variáveis no topo para filtrar por serviço, operação, duração mínima e tags HTTP.",
+			"type": "traces"
+		}
+	],
+	"refresh": "1m",
+	"schemaVersion": 39,
+	"tags": [
+		"gestao-armazem",
+		"jaeger",
+		"tracing",
+		"distributed"
+	],
+	"templating": {
+		"list": [
+			{
+				"current": {},
+				"hide": 0,
+				"includeAll": false,
+				"label": "Datasource Jaeger",
+				"multi": false,
+				"name": "jaeger_ds",
+				"options": [],
+				"query": "jaeger",
+				"refresh": 1,
+				"type": "datasource"
+			},
+			{
+				"current": {
+					"selected": false,
+					"text": "Catalogo.Api",
+					"value": "Catalogo.Api"
+				},
+				"hide": 0,
+				"includeAll": false,
+				"label": "Serviço",
+				"multi": false,
+				"name": "service",
+				"options": [
+					{
+						"selected": false,
+						"text": "Identidade.Api",
+						"value": "Identidade.Api"
+					},
+					{
+						"selected": true,
+						"text": "Catalogo.Api",
+						"value": "Catalogo.Api"
+					},
+					{
+						"selected": false,
+						"text": "Estoque.Api",
+						"value": "Estoque.Api"
+					},
+					{
+						"selected": false,
+						"text": "Pedidos.Api",
+						"value": "Pedidos.Api"
+					}
+				],
+				"query": "Identidade.Api,Catalogo.Api,Estoque.Api,Pedidos.Api",
+				"type": "custom"
+			},
+			{
+				"current": {
+					"selected": false,
+					"text": "All",
+					"value": ""
+				},
+				"hide": 0,
+				"includeAll": true,
+				"label": "Operação",
+				"multi": false,
+				"name": "operation",
+				"options": [],
+				"query": "",
+				"type": "textbox"
+			},
+			{
+				"current": {
+					"selected": false,
+					"text": "",
+					"value": ""
+				},
+				"hide": 0,
+				"includeAll": false,
+				"label": "Duração mínima (ex: 500ms)",
+				"multi": false,
+				"name": "min_duration",
+				"options": [],
+				"query": "",
+				"type": "textbox"
+			},
+			{
+				"current": {
+					"selected": false,
+					"text": "",
+					"value": ""
+				},
+				"hide": 0,
+				"includeAll": false,
+				"label": "Tags (ex: http.status_code=500)",
+				"multi": false,
+				"name": "tags",
+				"options": [],
+				"query": "",
+				"type": "textbox"
+			}
+		]
+	},
+	"time": {
+		"from": "now-3h",
+		"to": "now"
+	},
+	"timepicker": {},
+	"timezone": "browser",
+	"title": "Gestão Armazém — Rastreamento Distribuído (Jaeger)",
+	"uid": "gestao-armazem-jaeger",
+	"version": 1
+}
