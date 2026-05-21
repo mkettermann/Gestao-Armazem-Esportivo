@@ -2,8 +2,8 @@
 @baseUrl = http://localhost:8080
 @contentType = application/json
 # Cole aqui os tokens obtidos em 01-autenticacao.http
-@tokenAdmin = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5NGE0MjdiMi04NjgzLTRhNTAtYmRmNi1kYTc1NWNmZGViN2YiLCJlbWFpbCI6ImFkbWluQGFybWF6ZW0uY29tIiwibmFtZSI6IkFkbWluIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQWRtaW5pc3RyYWRvciIsImp0aSI6ImM5ZTllZGI5LTU1OTctNDdmYy04YWU3LWUyNjE2NTE4NmQwOCIsImV4cCI6MTc3OTQxNDQwNSwiaXNzIjoiR2VzdGFvQXJtYXplbSIsImF1ZCI6Ikdlc3Rhb0FybWF6ZW0ifQ.EP1zMoZ3dH_yJribNzRna7b0bL_sMBkT6b5i48wd7Sg
-@tokenVendedor = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0YTMwMGI2Yi0wZWRlLTRjYTgtODM2Ni1mZmRmYTRiNjg4N2QiLCJlbWFpbCI6InZlbmRlZG9yQGFybWF6ZW0uY29tIiwibmFtZSI6IlZlbmRlZG9yIFRlc3RlIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiVmVuZGVkb3IiLCJqdGkiOiJkYTJiYjBjZi00OTVlLTRhYzQtYTkxOS1hMzM3ODI0NzdmNTgiLCJleHAiOjE3Nzk0MTQ0MzYsImlzcyI6Ikdlc3Rhb0FybWF6ZW0iLCJhdWQiOiJHZXN0YW9Bcm1hemVtIn0.99c3go38FLlIpdl_eEEc4NbAezDhkJM-cYTwVbmmdXM
+@tokenAdmin = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiZjJlN2ZlYy0xY2E1LTQ5NTMtYTc4Ni1lYTdhYzIyODJmZjYiLCJlbWFpbCI6ImFkbWluQGFybWF6ZW0uY29tIiwibmFtZSI6IkFkbWluIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQWRtaW5pc3RyYWRvciIsImp0aSI6Ijc3Mjc1ZTA3LTZiZmQtNDA1OS04MmNmLWZmYTk1ODY0YjQwZSIsImV4cCI6MTc3OTQyMDg2OCwiaXNzIjoiR2VzdGFvQXJtYXplbSIsImF1ZCI6Ikdlc3Rhb0FybWF6ZW0ifQ.4xRw-AJ4B4Gu1RkV1fubam6K-zbCe6zAY0GbTob_L1c
+@tokenVendedor = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiY2U5OTY3NS0yZjVlLTQyYWQtOTU5Ni0xZDhkZDRlYzRlNGQiLCJlbWFpbCI6InZlbmRlZG9yQGFybWF6ZW0uY29tIiwibmFtZSI6IlZlbmRlZG9yIFRlc3RlIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiVmVuZGVkb3IiLCJqdGkiOiI1YjQ5MTE4Ni0yODc3LTQ3MTEtODc1YS04NTU0Mzc1MjM4ZTkiLCJleHAiOjE3Nzk0MjA4OTMsImlzcyI6Ikdlc3Rhb0FybWF6ZW0iLCJhdWQiOiJHZXN0YW9Bcm1hemVtIn0.oHe4pcWMNwgSy7qoS5BaICZ_NHGXemJHGEEf4ohLnz4
 
 # -------------------------------------------------------------------
 # PEDIDOS
@@ -21,7 +21,7 @@ Authorization: Bearer {{tokenVendedor}}
   "nomeVendedor": "Vendedor Teste",
   "itens": [
     {
-      "produtoId": "bbdacfe0-a2de-458b-9db9-4124501e4086",
+      "produtoId": "dcb67de6-5f95-4ffc-a834-e9ae228ac1b9",
       "quantidade": 2
     }
   ]
@@ -31,5 +31,5 @@ Authorization: Bearer {{tokenVendedor}}
 
 ### Obter pedido por ID - roles: Administrador, Vendedor
 # Substitua o GUID pelo id retornado em "Emitir pedido"
-GET {{baseUrl}}/pedidos/25e8ea9d-420d-499f-9f37-fe79b4de3bbb
+GET {{baseUrl}}/pedidos/8d76305a-d35f-46bb-92fe-287bdfa62c44
 Authorization: Bearer {{tokenAdmin}}
