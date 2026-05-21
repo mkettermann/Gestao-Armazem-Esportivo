@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
+using Pedidos.Api;
 using Pedidos.Application.Clientes;
 using Pedidos.Application.Servicos;
 using Pedidos.Domain.Excecoes;
@@ -41,16 +42,18 @@ builder.Services.AddSingleton<IConnectionFactory>(_ =>
         Password = builder.Configuration["RabbitMQ:Senha"] ?? "guest"
     });
 builder.Services.AddScoped<IEventoPublicador, RabbitMqPublicador>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<AutenticacaoForwardHandler>();
 builder.Services.AddHttpClient<EstoqueClienteHttp>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["ServicosInternos:EstoqueUrl"]
                                  ?? "http://localhost:5002");
-});
+}).AddHttpMessageHandler<AutenticacaoForwardHandler>();
 builder.Services.AddHttpClient<CatalogoClienteHttp>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["ServicosInternos:CatalogoUrl"]
                                  ?? "http://localhost:5001");
-});
+}).AddHttpMessageHandler<AutenticacaoForwardHandler>();
 builder.Services.AddScoped<PedidoServico>();
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<PedidosDbContext>();

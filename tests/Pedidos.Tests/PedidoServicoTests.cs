@@ -13,6 +13,7 @@ public class PedidoServicoTests
 {
     private readonly Mock<IPedidoRepositorio> _repositorioMock = new();
     private readonly Mock<EstoqueClienteHttp> _estoqueClienteMock;
+    private readonly Mock<CatalogoClienteHttp> _catalogoClienteMock;
     private readonly Mock<IEventoPublicador> _publicadorMock = new();
     private readonly PedidoServico _servico;
 
@@ -20,9 +21,12 @@ public class PedidoServicoTests
     {
         _estoqueClienteMock = new Mock<EstoqueClienteHttp>(
             new System.Net.Http.HttpClient());
+        _catalogoClienteMock = new Mock<CatalogoClienteHttp>(
+            new System.Net.Http.HttpClient());
         _servico = new PedidoServico(
             _repositorioMock.Object,
             _estoqueClienteMock.Object,
+            _catalogoClienteMock.Object,
             _publicadorMock.Object);
     }
 
@@ -30,6 +34,9 @@ public class PedidoServicoTests
     public async Task EmitirAsync_NaoDeveCriarPedido_QuandoEstoqueInsuficiente()
     {
         var produtoId = Guid.NewGuid();
+        _catalogoClienteMock.Setup(c => c.obterProdutoAsync(produtoId, default))
+            .ReturnsAsync(Resultado<ProdutoExternoDto>.Sucesso(
+                new ProdutoExternoDto { nome = "Produto Teste", preco = 10m }));
         _estoqueClienteMock.Setup(c => c.obterQuantidadeDisponivel(produtoId, default))
             .ReturnsAsync(Resultado<int>.Sucesso(2));
 
@@ -51,6 +58,9 @@ public class PedidoServicoTests
     public async Task EmitirAsync_DevePublicarEvento_QuandoSucesso()
     {
         var produtoId = Guid.NewGuid();
+        _catalogoClienteMock.Setup(c => c.obterProdutoAsync(produtoId, default))
+            .ReturnsAsync(Resultado<ProdutoExternoDto>.Sucesso(
+                new ProdutoExternoDto { nome = "Produto Teste", preco = 99.9m }));
         _estoqueClienteMock.Setup(c => c.obterQuantidadeDisponivel(produtoId, default))
             .ReturnsAsync(Resultado<int>.Sucesso(50));
         _repositorioMock.Setup(r => r.adicionarAsync(It.IsAny<Pedido>(), default))
