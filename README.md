@@ -43,6 +43,15 @@ As migrations do banco de dados são aplicadas automaticamente na inicializaçã
 
 ---
 
+## Documentação
+
+| Documento | Descrição |
+| --- | --- |
+| [Gateway](docs/Gateway.md) | Arquitetura do proxy reverso, rotas e fluxo de requisição |
+| [Descrição do Sistema](docs/Descricao.md) | |
+
+---
+
 ## Serviços e Portas
 
 | Serviço          | URL Local                    |
@@ -315,9 +324,3 @@ Cada serviço segue **Clean Architecture** com camadas:
 - **Application** — Serviços de aplicação, DTOs, Clientes HTTP
 - **Domain** — Entidades, Value Objects, Factories, Interfaces
 - **Infrastructure** — EF Core DbContext, Repositórios, Mensageria
-
----
-
-## Documentação Adicional
-
-- [Descrição do Sistema](docs/Descricao.md)
