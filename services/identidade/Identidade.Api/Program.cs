@@ -9,11 +9,14 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
 using Shared.Contratos.Extensoes;
+using Shared.Contratos.Filtros;
 using Shared.Contratos.Respostas;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers()
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<IdempotencyFilter>();
+builder.Services.AddControllers(opts => opts.Filters.AddService<IdempotencyFilter>())
     .AddJsonOptions(opts =>
         opts.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()));
 builder.Services.AddEndpointsApiExplorer();

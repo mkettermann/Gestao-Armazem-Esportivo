@@ -11,11 +11,14 @@ using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
 using RabbitMQ.Client;
 using Shared.Contratos.Extensoes;
+using Shared.Contratos.Filtros;
 using Shared.Contratos.Respostas;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<IdempotencyFilter>();
+builder.Services.AddControllers(opts => opts.Filters.AddService<IdempotencyFilter>());
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {

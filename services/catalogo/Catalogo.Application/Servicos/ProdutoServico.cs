@@ -1,4 +1,5 @@
 using Catalogo.Application.DTOs;
+using Catalogo.Domain.Excecoes;
 using Catalogo.Domain.Factories;
 using Catalogo.Domain.Interfaces;
 using Catalogo.Domain.ValueObjects;
@@ -16,11 +17,21 @@ public class ProdutoServico
     public async Task<Resultado<ProdutoRespostaDto>> criarAsync(
         CriarProdutoDto dto, CancellationToken ct = default)
     {
-        var produto = ProdutoFactory.criar(dto.nome, dto.descricao, dto.preco);
-        await _produtoRepositorio.adicionarAsync(produto, ct);
-        await _produtoRepositorio.salvarAlteracoesAsync(ct);
+        if (await _produtoRepositorio.existeComNomeAsync(dto.nome, null, ct))
+            return Resultado<ProdutoRespostaDto>.Falha("Já existe um produto cadastrado com este nome.");
 
-        return Resultado<ProdutoRespostaDto>.Sucesso(mapear(produto));
+        try
+        {
+            var produto = ProdutoFactory.criar(dto.nome, dto.descricao, dto.preco);
+            await _produtoRepositorio.adicionarAsync(produto, ct);
+            await _produtoRepositorio.salvarAlteracoesAsync(ct);
+
+            return Resultado<ProdutoRespostaDto>.Sucesso(mapear(produto));
+        }
+        catch (DomainException ex)
+        {
+            return Resultado<ProdutoRespostaDto>.Falha(ex.Message);
+        }
     }
 
     public async Task<Resultado<ListaProdutosRespostaDto>> listarAsync(
@@ -53,10 +64,20 @@ public class ProdutoServico
         if (produto is null)
             return Resultado<ProdutoRespostaDto>.Falha("Produto não encontrado.");
 
-        produto.atualizar(dto.nome, dto.descricao, Preco.criar(dto.preco));
-        await _produtoRepositorio.salvarAlteracoesAsync(ct);
+        if (await _produtoRepositorio.existeComNomeAsync(dto.nome, id, ct))
+            return Resultado<ProdutoRespostaDto>.Falha("Já existe um produto cadastrado com este nome.");
 
-        return Resultado<ProdutoRespostaDto>.Sucesso(mapear(produto));
+        try
+        {
+            produto.atualizar(dto.nome, dto.descricao, Preco.criar(dto.preco));
+            await _produtoRepositorio.salvarAlteracoesAsync(ct);
+
+            return Resultado<ProdutoRespostaDto>.Sucesso(mapear(produto));
+        }
+        catch (DomainException ex)
+        {
+            return Resultado<ProdutoRespostaDto>.Falha(ex.Message);
+        }
     }
 
     public async Task<Resultado<bool>> removerAsync(Guid id, CancellationToken ct = default)
@@ -80,3 +101,4 @@ public class ProdutoServico
         dataCadastro = p.dataCadastro
     };
 }
+

@@ -31,5 +31,5 @@ Authorization: Bearer {{tokenVendedor}}
 
 ### Obter pedido por ID - roles: Administrador, Vendedor
 # Substitua o GUID pelo id retornado em "Emitir pedido"
-GET {{baseUrl}}/pedidos/bbdacfe0-a2de-458b-9db9-4124501e4086
+GET {{baseUrl}}/pedidos/25e8ea9d-420d-499f-9f37-fe79b4de3bbb
 Authorization: Bearer {{tokenAdmin}}

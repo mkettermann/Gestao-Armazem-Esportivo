@@ -33,4 +33,11 @@ public class ProdutoRepositorio : IProdutoRepositorio
 
     public async Task salvarAlteracoesAsync(CancellationToken ct = default) =>
         await _contexto.SaveChangesAsync(ct);
+
+    public async Task<bool> existeComNomeAsync(string nome, Guid? excluirId, CancellationToken ct = default) =>
+        await _contexto.Produtos.AnyAsync(
+            p => p.ativo
+                 && (excluirId == null || p.id != excluirId)
+                 && p.nome.ToLower() == nome.ToLower().Trim(),
+            ct);
 }
