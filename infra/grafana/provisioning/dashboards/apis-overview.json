@@ -201,7 +201,7 @@
 			},
 			"targets": [
 				{
-					"expr": "sum by (service_name) (rate(http_server_request_duration_seconds_count{service_name=~\"$service\", http_response_status_code=~\"5..\"}[$__rate_interval])) / sum by (service_name) (rate(http_server_request_duration_seconds_count{service_name=~\"$service\"}[$__rate_interval]))",
+					"expr": "(sum by (service_name) (rate(http_server_request_duration_seconds_count{service_name=~\"$service\", http_response_status_code=~\"5..\"}[$__rate_interval])) or sum by (service_name) (rate(http_server_request_duration_seconds_count{service_name=~\"$service\"}[$__rate_interval]) * 0)) / sum by (service_name) (rate(http_server_request_duration_seconds_count{service_name=~\"$service\"}[$__rate_interval]))",
 					"legendFormat": "{{service_name}}",
 					"refId": "A"
 				}
@@ -453,8 +453,8 @@
 			},
 			"targets": [
 				{
-					"expr": "sum by (service_name, generation) (process_runtime_dotnet_gc_heap_size_bytes{service_name=~\"$service\"})",
-					"legendFormat": "{{service_name}} — Gen {{generation}}",
+					"expr": "sum by (service_name, gc_heap_generation) (dotnet_gc_last_collection_heap_size_bytes{service_name=~\"$service\"})",
+					"legendFormat": "{{service_name}} — {{gc_heap_generation}}",
 					"refId": "A"
 				}
 			],
@@ -500,8 +500,8 @@
 			},
 			"targets": [
 				{
-					"expr": "sum by (service_name, generation) (rate(process_runtime_dotnet_gc_collections_count_total{service_name=~\"$service\"}[$__rate_interval]))",
-					"legendFormat": "{{service_name}} — Gen {{generation}}",
+					"expr": "sum by (service_name, gc_heap_generation) (rate(dotnet_gc_collections_total{service_name=~\"$service\"}[$__rate_interval]))",
+					"legendFormat": "{{service_name}} — {{gc_heap_generation}}",
 					"refId": "A"
 				}
 			],
@@ -547,12 +547,12 @@
 			},
 			"targets": [
 				{
-					"expr": "process_threads{service_name=~\"$service\"}",
+					"expr": "process_thread_count{service_name=~\"$service\"}",
 					"legendFormat": "Threads — {{service_name}}",
 					"refId": "A"
 				},
 				{
-					"expr": "process_runtime_dotnet_thread_pool_threads_count{service_name=~\"$service\"}",
+					"expr": "dotnet_thread_pool_thread_count_total{service_name=~\"$service\"}",
 					"legendFormat": "ThreadPool — {{service_name}}",
 					"refId": "B"
 				}
@@ -599,7 +599,7 @@
 			},
 			"targets": [
 				{
-					"expr": "sum by (service_name) (rate(process_runtime_dotnet_exceptions_count_total{service_name=~\"$service\"}[$__rate_interval]))",
+					"expr": "sum by (service_name) (rate(dotnet_exceptions_total{service_name=~\"$service\"}[$__rate_interval]))",
 					"legendFormat": "{{service_name}}",
 					"refId": "A"
 				}
@@ -863,7 +863,7 @@
 			},
 			"targets": [
 				{
-					"expr": "sum by (service_name) (rate(http_server_request_duration_seconds_count{service_name=~\"$service\", http_response_status_code=~\"5..\"}[$__rate_interval])) / sum by (service_name) (rate(http_server_request_duration_seconds_count{service_name=~\"$service\"}[$__rate_interval]))",
+					"expr": "(sum by (service_name) (rate(http_server_request_duration_seconds_count{service_name=~\"$service\", http_response_status_code=~\"5..\"}[$__rate_interval])) or sum by (service_name) (rate(http_server_request_duration_seconds_count{service_name=~\"$service\"}[$__rate_interval]) * 0)) / sum by (service_name) (rate(http_server_request_duration_seconds_count{service_name=~\"$service\"}[$__rate_interval]))",
 					"legendFormat": "{{service_name}}",
 					"refId": "A"
 				}

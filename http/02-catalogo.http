@@ -2,8 +2,8 @@
 @baseUrl = http://localhost:8080
 @contentType = application/json
 # Cole aqui o token obtido em 01-autenticacao.http (login Admin)
-@tokenAdmin = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5OWMxN2FjOS1iODliLTQ5MDctOGJiMC03ZjAxMmE2OGI3NzUiLCJlbWFpbCI6ImFkbWluQGFybWF6ZW0uY29tIiwibmFtZSI6IkFkbWluIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQWRtaW5pc3RyYWRvciIsImp0aSI6IjRlYmNhZmQxLTY1Y2EtNGNiMi1iNzU2LWUwZTZiOTRjMWJlMyIsImV4cCI6MTc3OTQyMzk1MSwiaXNzIjoiR2VzdGFvQXJtYXplbSIsImF1ZCI6Ikdlc3Rhb0FybWF6ZW0ifQ.4TQHfAXWtUDsJ1w-na0kdR4fPg8WZ-UC-2GNFNI9BsA
-@tokenVendedor = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ZmQ1YjdkNy1iNDgzLTQ4YzYtYjA0Ni05YzAwODYzYWI5NDgiLCJlbWFpbCI6InZlbmRlZG9yQGFybWF6ZW0uY29tIiwibmFtZSI6IlZlbmRlZG9yIFRlc3RlIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiVmVuZGVkb3IiLCJqdGkiOiJmYTUwZmU1My1kNDUxLTQxYmUtOTFhNS00YjRjZDM3MDQ5OTYiLCJleHAiOjE3Nzk0MjM5NzIsImlzcyI6Ikdlc3Rhb0FybWF6ZW0iLCJhdWQiOiJHZXN0YW9Bcm1hemVtIn0.A4xJuVp2Lfd1H1przXiiif3s-GNsq1qAaxeOKGxD6Y4
+@tokenAdmin = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0YzRmYWNlZC05ZDg0LTQ3YmEtOTYzMy0zOTQwMzE5NWM2ZGYiLCJlbWFpbCI6ImFkbWluQGFybWF6ZW0uY29tIiwibmFtZSI6IkFkbWluIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQWRtaW5pc3RyYWRvciIsImp0aSI6IjMyZGZlZmVlLTBiMzQtNDIxMS1hMjdmLWM4MTdkMmUxYWYzMyIsImV4cCI6MTc3OTQyNjY4MSwiaXNzIjoiR2VzdGFvQXJtYXplbSIsImF1ZCI6Ikdlc3Rhb0FybWF6ZW0ifQ.Ztd2Ce24ts0krhzWTBV9-RJN4suYIcAIQFc-oU187B8
+@tokenVendedor = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkMTg3ZDdhYS05MTlkLTRjOTEtOWE1OC04NTViODNiZTU0OTYiLCJlbWFpbCI6InZlbmRlZG9yQGFybWF6ZW0uY29tIiwibmFtZSI6IlZlbmRlZG9yIFRlc3RlIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiVmVuZGVkb3IiLCJqdGkiOiIyMzFiNmI1Yi1lOWE0LTQ1OWItOGUyNC0wMTY4MDgzNjM1OGYiLCJleHAiOjE3Nzk0MjY3MDEsImlzcyI6Ikdlc3Rhb0FybWF6ZW0iLCJhdWQiOiJHZXN0YW9Bcm1hemVtIn0.QjxCx7topUSKRAkeEDpgp8B3FCF2KXnEMe0wToBD1VU
 
 # -------------------------------------------------------------------
 # CATÁLOGO DE PRODUTOS
@@ -31,26 +31,26 @@ Authorization: Bearer {{tokenVendedor}}
 
 ### Obter produto por ID - roles: Administrador, Vendedor
 # Substitua o GUID pelo id retornado em "Criar produto"
-GET {{baseUrl}}/produtos/2b2eaa3f-bcf4-4247-8ed4-755dc17f22eb
+GET {{baseUrl}}/produtos/d5ad5d3e-578b-40ae-85e6-ca347755071c
 Authorization: Bearer {{tokenVendedor}}
 
 ###
 
 ### Atualizar produto (requer role Administrador)
 # Substitua o GUID pelo id do produto
-PUT {{baseUrl}}/produtos/2b2eaa3f-bcf4-4247-8ed4-755dc17f22eb
+PUT {{baseUrl}}/produtos/d5ad5d3e-578b-40ae-85e6-ca347755071c
 Content-Type: {{contentType}}
 Authorization: Bearer {{tokenAdmin}}
 
 {
   "nome": "Bola de Futebol Society Pro",
   "descricao": "Bola oficial tamanho 5, costura tripla reforçada",
-  "preco": 129.90
+  "preco": 139.90
 }
 
 ###
 
 ### Remover produto (requer role Administrador)
 # Substitua o GUID pelo id do produto
-DELETE {{baseUrl}}/produtos/2b2eaa3f-bcf4-4247-8ed4-755dc17f22eb
+DELETE {{baseUrl}}/produtos/d5ad5d3e-578b-40ae-85e6-ca347755071c
 Authorization: Bearer {{tokenAdmin}}

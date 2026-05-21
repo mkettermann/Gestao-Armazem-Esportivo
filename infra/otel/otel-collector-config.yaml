@@ -11,11 +11,13 @@ processors:
 
 exporters:
   otlp/jaeger:
-    endpoint: jaeger:4318
+    endpoint: jaeger:4317
     tls:
       insecure: true
   prometheus:
     endpoint: "0.0.0.0:8889"
+    resource_to_telemetry_conversion:
+      enabled: true
 
 service:
   pipelines:
