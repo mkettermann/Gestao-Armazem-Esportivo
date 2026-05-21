@@ -1,0 +1,9 @@
+POST http://localhost:8080/produtos
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "nome": "Bola de Futebol",
+  "descricao": "Bola oficial tamanho 5",
+  "preco": 149.90
+}

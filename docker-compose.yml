@@ -1,0 +1,163 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    volumes:
+      - ./infra/otel/otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
+    command: [ "--config=/etc/otel-collector-config.yaml" ]
+    ports:
+      - "4317:4317"
+    depends_on:
+      - jaeger
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"
+      - "4318:4318"
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+
+  identidade-api:
+    build:
+      context: .
+      dockerfile: services/identidade/Identidade.Api/Dockerfile
+    environment:
+      ConnectionStrings__Identidade: "Host=postgres;Port=5432;Database=identidade_db;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+      JWT__Chave: ${JWT_CHAVE}
+      JWT__Emissor: GestaoArmazem
+      JWT__Audiencia: GestaoArmazem
+      JWT__ExpiracaoEmHoras: "8"
+      Observabilidade__OtlpEndpoint: http://otel-collector:4317
+    ports:
+      - "5001:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  catalogo-api:
+    build:
+      context: .
+      dockerfile: services/catalogo/Catalogo.Api/Dockerfile
+    environment:
+      ConnectionStrings__Catalogo: "Host=postgres;Port=5432;Database=catalogo_db;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+      JWT__Chave: ${JWT_CHAVE}
+      JWT__Emissor: GestaoArmazem
+      JWT__Audiencia: GestaoArmazem
+      JWT__ExpiracaoEmHoras: "8"
+      Observabilidade__OtlpEndpoint: http://otel-collector:4317
+    ports:
+      - "5002:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  estoque-api:
+    build:
+      context: .
+      dockerfile: services/estoque/Estoque.Api/Dockerfile
+    environment:
+      ConnectionStrings__Estoque: "Host=postgres;Port=5432;Database=estoque_db;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+      JWT__Chave: ${JWT_CHAVE}
+      JWT__Emissor: GestaoArmazem
+      JWT__Audiencia: GestaoArmazem
+      JWT__ExpiracaoEmHoras: "8"
+      RabbitMQ__Host: rabbitmq
+      RabbitMQ__Usuario: ${RABBITMQ_USER}
+      RabbitMQ__Senha: ${RABBITMQ_PASSWORD}
+      Observabilidade__OtlpEndpoint: http://otel-collector:4317
+    ports:
+      - "5003:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  pedidos-api:
+    build:
+      context: .
+      dockerfile: services/pedidos/Pedidos.Api/Dockerfile
+    environment:
+      ConnectionStrings__Pedidos: "Host=postgres;Port=5432;Database=pedidos_db;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+      JWT__Chave: ${JWT_CHAVE}
+      JWT__Emissor: GestaoArmazem
+      JWT__Audiencia: GestaoArmazem
+      JWT__ExpiracaoEmHoras: "8"
+      RabbitMQ__Host: rabbitmq
+      RabbitMQ__Usuario: ${RABBITMQ_USER}
+      RabbitMQ__Senha: ${RABBITMQ_PASSWORD}
+      ServicosInternos__EstoqueUrl: http://estoque-api:8080
+      ServicosInternos__CatalogoUrl: http://catalogo-api:8080
+      Observabilidade__OtlpEndpoint: http://otel-collector:4317
+    ports:
+      - "5004:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      estoque-api:
+        condition: service_started
+      catalogo-api:
+        condition: service_started
+
+  gateway:
+    build:
+      context: .
+      dockerfile: gateway/Gateway.Api/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - identidade-api
+      - catalogo-api
+      - estoque-api
+      - pedidos-api
+
+volumes:
+  pgdata:

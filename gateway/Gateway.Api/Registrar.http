@@ -1,0 +1,9 @@
+POST http://localhost:8080/auth/usuarios
+Content-Type: application/json
+
+{
+  "nome": "Admin",
+  "email": "admin@armazem.com",
+  "senha": "Senha@123",
+  "tipo": "Administrador"
+}
