@@ -1,8 +1,0 @@
-POST http://localhost:8080/estoque/<id-do-produto>/entradas
-Authorization: Bearer <token>
-Content-Type: application/json
-
-{
-  "quantidade": 50,
-  "numeroNotaFiscal": "NF-001/2024"
-}

@@ -1,0 +1,55 @@
+### Variáveis globais
+@baseUrl = http://localhost:8080
+@contentType = application/json
+
+# -------------------------------------------------------------------
+# AUTENTICAÇÃO
+# -------------------------------------------------------------------
+
+### Registrar usuário Administrador
+POST {{baseUrl}}/auth/usuarios
+Content-Type: {{contentType}}
+
+{
+  "nome": "Admin",
+  "email": "admin@armazem.com",
+  "senha": "Senha@123",
+  "tipoUsuario": "Administrador"
+}
+
+###
+
+### Registrar usuário Vendedor
+POST {{baseUrl}}/auth/usuarios
+Content-Type: {{contentType}}
+
+{
+  "nome": "Vendedor Teste",
+  "email": "vendedor@armazem.com",
+  "senha": "Senha@123",
+  "tipoUsuario": "Vendedor"
+}
+
+###
+
+### Login - Administrador
+# @name loginAdmin
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "admin@armazem.com",
+  "senha": "Senha@123"
+}
+
+###
+
+### Login - Vendedor
+# @name loginVendedor
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "vendedor@armazem.com",
+  "senha": "Senha@123"
+}

@@ -8,6 +8,7 @@ Sistema de microserviços em .NET 9 para gestão de estoque de produtos esportiv
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (com Docker Compose)
 - .NET 9 SDK (apenas para desenvolvimento local fora do Docker)
+- [VS Code](https://code.visualstudio.com/) + extensão [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) *(opcional, para rodar os arquivos `.http`)*
 
 ---
 
@@ -56,6 +57,34 @@ As migrations do banco de dados são aplicadas automaticamente na inicializaçã
 
 ---
 
+## Testando os Endpoints
+
+Há duas formas de testar a API:
+
+### Opção A — VS Code REST Client (recomendado)
+
+Com o projeto aberto no VS Code e a extensão [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) instalada, abra qualquer arquivo da pasta `http/` e clique em **Send Request** acima de cada chamada.
+
+| Arquivo | Conteúdo |
+|---|---|
+| `http/01-autenticacao.http` | Registrar usuário (Admin e Vendedor), Login |
+| `http/02-catalogo.http` | Criar, listar, obter, atualizar e remover produtos |
+| `http/03-estoque.http` | Adicionar entrada de estoque, consultar estoque |
+| `http/04-pedidos.http` | Emitir pedido, consultar pedido por ID |
+
+**Fluxo sugerido:**
+
+1. Execute **"Registrar usuário Administrador"** em `01-autenticacao.http`
+2. Execute **"Login - Administrador"** e copie o `token` retornado
+3. Cole o token na variável `@tokenAdmin` nos arquivos `02`, `03` e `04`
+4. Siga o fluxo completo (produto → estoque → pedido)
+
+### Opção B — Seguir os exemplos neste README
+
+Os exemplos completos estão na seção **Fluxo de Uso Completo** logo abaixo. Você pode copiá-los para qualquer cliente HTTP (curl, Insomnia, Postman etc.).
+
+---
+
 ## Fluxo de Uso Completo
 
 ### 1. Registrar um usuário administrador
@@ -68,7 +97,7 @@ Content-Type: application/json
   "nome": "Admin",
   "email": "admin@armazem.com",
   "senha": "Senha@123",
-  "tipo": "Administrador"
+  "tipoUsuario": "Administrador"
 }
 ```
 
@@ -86,7 +115,21 @@ Content-Type: application/json
 
 Guarde o `token` retornado. Use-o no header `Authorization: Bearer <token>` em todas as próximas requisições.
 
-### 3. Cadastrar um produto
+### 3. Registrar um usuário Vendedor *(opcional)*
+
+```http
+POST http://localhost:8080/auth/usuarios
+Content-Type: application/json
+
+{
+  "nome": "Vendedor Teste",
+  "email": "vendedor@armazem.com",
+  "senha": "Senha@123",
+  "tipoUsuario": "Vendedor"
+}
+```
+
+### 4. Cadastrar um produto
 
 ```http
 POST http://localhost:8080/produtos
@@ -102,7 +145,35 @@ Content-Type: application/json
 
 Guarde o `id` do produto retornado.
 
-### 4. Adicionar estoque ao produto
+### 5. Listar produtos
+
+```http
+GET http://localhost:8080/produtos?pagina=1&tamanhoPagina=20
+Authorization: Bearer <token>
+```
+
+### 6. Obter produto por ID
+
+```http
+GET http://localhost:8080/produtos/<id-do-produto>
+Authorization: Bearer <token>
+```
+
+### 7. Atualizar produto
+
+```http
+PUT http://localhost:8080/produtos/<id-do-produto>
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "nome": "Bola de Futebol Pro",
+  "descricao": "Bola oficial tamanho 5, costura tripla reforçada",
+  "preco": 199.90
+}
+```
+
+### 8. Adicionar estoque ao produto
 
 ```http
 POST http://localhost:8080/estoque/<id-do-produto>/entradas
@@ -115,7 +186,14 @@ Content-Type: application/json
 }
 ```
 
-### 5. Criar um pedido
+### 9. Consultar estoque
+
+```http
+GET http://localhost:8080/estoque/<id-do-produto>
+Authorization: Bearer <token>
+```
+
+### 10. Criar um pedido
 
 ```http
 POST http://localhost:8080/pedidos
@@ -135,6 +213,20 @@ Content-Type: application/json
 ```
 
 O pedido é confirmado, o estoque é debitado assincronamente via RabbitMQ e o evento `PedidoConfirmadoEvento` é publicado.
+
+### 11. Consultar um pedido por ID
+
+```http
+GET http://localhost:8080/pedidos/<id-do-pedido>
+Authorization: Bearer <token>
+```
+
+### 12. Remover produto
+
+```http
+DELETE http://localhost:8080/produtos/<id-do-produto>
+Authorization: Bearer <token>
+```
 
 ---
 

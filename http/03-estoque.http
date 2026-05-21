@@ -1,0 +1,28 @@
+### Variáveis globais
+@baseUrl = http://localhost:8080
+@contentType = application/json
+# Cole aqui o token obtido em 01-autenticacao.http (login Admin)
+@tokenAdmin = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmOTRiMjIwZS01ZmMzLTQ3N2MtYThlZC1mYzkwNDNiMjkwMmUiLCJlbWFpbCI6ImFkbWluQGFybWF6ZW0uY29tIiwibmFtZSI6IkFkbWluIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQWRtaW5pc3RyYWRvciIsImp0aSI6IjZjMmUzMmQ1LTE4ZTEtNDgyMi04NmE2LWI1ZDNlMDAwY2ZmNiIsImV4cCI6MTc3OTQxMTI5NCwiaXNzIjoiR2VzdGFvQXJtYXplbSIsImF1ZCI6Ikdlc3Rhb0FybWF6ZW0ifQ.sPgiNlzHq5agQPLih0WtfgERhG_GBXO5L3sr3UGw9Bk
+@tokenVendedor = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3OThiNDA1Yi0zMTQ5LTQ3YjAtOWViYi0zMjkwOGY5Y2M0MGMiLCJlbWFpbCI6InZlbmRlZG9yQGFybWF6ZW0uY29tIiwibmFtZSI6IlZlbmRlZG9yIFRlc3RlIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiVmVuZGVkb3IiLCJqdGkiOiI5MzY1ZWMwZi03OGM2LTQwMDMtOTc5Mi05ZWFjNDZjMTAyYjIiLCJleHAiOjE3Nzk0MTMwNTIsImlzcyI6Ikdlc3Rhb0FybWF6ZW0iLCJhdWQiOiJHZXN0YW9Bcm1hemVtIn0.ih9xOvLhcwhIaQIJGAGDrUjV2lIkjB8-wgJVf9Zg4xI
+
+# -------------------------------------------------------------------
+# ESTOQUE
+# -------------------------------------------------------------------
+
+### Adicionar estoque para um produto (requer role Administrador)
+# Substitua o GUID pelo id do produto cadastrado no catálogo
+POST {{baseUrl}}/estoque/c161d451-bf11-433c-8f9f-0550cf4b13b3/entradas
+Content-Type: {{contentType}}
+Authorization: Bearer {{tokenAdmin}}
+
+{
+  "quantidade": 50,
+  "numeroNotaFiscal": "NF-2026-0001"
+}
+
+###
+
+### Consultar estoque de um produto - roles: Administrador, Vendedor
+# Substitua o GUID pelo id do produto
+GET {{baseUrl}}/estoque/c161d451-bf11-433c-8f9f-0550cf4b13b3
+Authorization: Bearer {{tokenVendedor}}
