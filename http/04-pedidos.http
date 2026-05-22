@@ -1,0 +1,35 @@
+### Variáveis globais
+@baseUrl = http://localhost:8080
+@contentType = application/json
+# Cole aqui os tokens obtidos em 01-autenticacao.http
+@tokenAdmin = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+@tokenVendedor = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+# -------------------------------------------------------------------
+# PEDIDOS
+# -------------------------------------------------------------------
+
+### Emitir pedido (requer role Vendedor)
+# @name emitirPedido
+# Substitua os GUIDs pelos ids reais dos produtos
+POST {{baseUrl}}/pedidos
+Content-Type: {{contentType}}
+Authorization: Bearer {{tokenVendedor}}
+
+{
+  "documentoCliente": "123.456.789-00",
+  "nomeVendedor": "Vendedor Teste",
+  "itens": [
+    {
+      "produtoId": "543204a9-4f5d-40be-b2c1-dc3c3c227284",
+      "quantidade": 2
+    }
+  ]
+}
+
+###
+
+### Obter pedido por ID - roles: Administrador, Vendedor
+# Substitua o GUID pelo id retornado em "Emitir pedido"
+GET {{baseUrl}}/pedidos/89bdf3fa-d6a3-4315-b42f-0bcbe7067afa
+Authorization: Bearer {{tokenAdmin}}

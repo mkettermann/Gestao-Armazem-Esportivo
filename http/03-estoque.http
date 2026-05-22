@@ -1,0 +1,28 @@
+### Variáveis globais
+@baseUrl = http://localhost:8080
+@contentType = application/json
+# Cole aqui o token obtido em 01-autenticacao.http (login Admin)
+@tokenAdmin = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+@tokenVendedor = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+# -------------------------------------------------------------------
+# ESTOQUE
+# -------------------------------------------------------------------
+
+### Consultar estoque de um produto - roles: Administrador, Vendedor
+# Substitua o GUID pelo id do produto
+GET {{baseUrl}}/estoque/543204a9-4f5d-40be-b2c1-dc3c3c227284
+Authorization: Bearer {{tokenVendedor}}
+
+###
+
+### Adicionar estoque para um produto (requer role Administrador)
+# Substitua o GUID pelo id do produto cadastrado no catálogo
+POST {{baseUrl}}/estoque/543204a9-4f5d-40be-b2c1-dc3c3c227284/entradas
+Content-Type: {{contentType}}
+Authorization: Bearer {{tokenAdmin}}
+
+{
+  "quantidade": 50,
+  "numeroNotaFiscal": "NF-2026-0001"
+}

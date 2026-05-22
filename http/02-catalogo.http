@@ -1,0 +1,56 @@
+### Variáveis globais
+@baseUrl = http://localhost:8080
+@contentType = application/json
+# Cole aqui o token obtido em 01-autenticacao.http (login Admin)
+@tokenAdmin = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+@tokenVendedor = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+# -------------------------------------------------------------------
+# CATÁLOGO DE PRODUTOS
+# -------------------------------------------------------------------
+
+### Criar produto (requer role Administrador)
+# @name criarProduto
+POST {{baseUrl}}/produtos
+Content-Type: {{contentType}}
+Authorization: Bearer {{tokenAdmin}}
+
+{
+  "nome": "Bola de Futebol Society",
+  "descricao": "Bola oficial tamanho 5, costura dupla",
+  "preco": 89.90
+}
+
+###
+
+### Listar produtos (paginação) - roles: Administrador, Vendedor
+GET {{baseUrl}}/produtos?pagina=1&tamanhoPagina=20
+Authorization: Bearer {{tokenVendedor}}
+
+###
+
+### Obter produto por ID - roles: Administrador, Vendedor
+# Substitua o GUID pelo id retornado em "Criar produto"
+GET {{baseUrl}}/produtos/543204a9-4f5d-40be-b2c1-dc3c3c227284
+Authorization: Bearer {{tokenVendedor}}
+
+###
+
+### Atualizar produto (requer role Administrador)
+# Substitua o GUID pelo id do produto
+PUT {{baseUrl}}/produtos/543204a9-4f5d-40be-b2c1-dc3c3c227284
+Content-Type: {{contentType}}
+Authorization: Bearer {{tokenAdmin}}
+
+{
+  "nome": "Bola de Futebol Society Pro",
+  "descricao": "Bola oficial tamanho 5, costura tripla reforçada",
+  "preco": 139.90
+}
+
+###
+
+### Remover produto (requer role Administrador)
+# Substitua o GUID pelo id do produto
+DELETE {{baseUrl}}/produtos/543204a9-4f5d-40be-b2c1-dc3c3c227284
+Authorization: Bearer {{tokenAdmin}}

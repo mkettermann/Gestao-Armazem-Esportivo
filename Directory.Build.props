@@ -1,0 +1,6 @@
+<Project>
+  <ItemGroup>
+    <PackageReference Update="Microsoft.EntityFrameworkCore" Version="9.0.16" />
+    <PackageReference Update="Microsoft.EntityFrameworkCore.Relational" Version="9.0.16" />
+  </ItemGroup>
+</Project>
