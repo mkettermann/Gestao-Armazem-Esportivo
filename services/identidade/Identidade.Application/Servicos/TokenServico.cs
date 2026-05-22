@@ -20,7 +20,7 @@ public class TokenServico
             Encoding.UTF8.GetBytes(_config["JWT:Chave"]!));
 
         var credenciais = new SigningCredentials(chave, SecurityAlgorithms.HmacSha256);
-        var expiracaoHoras = int.Parse(_config["JWT:ExpiracaoHoras"] ?? "8");
+        var expiracaoHoras = int.Parse(_config["JWT:ExpiracaoEmHoras"] ?? "8");
         var expiracao = DateTime.UtcNow.AddHours(expiracaoHoras);
 
         var claims = new[]

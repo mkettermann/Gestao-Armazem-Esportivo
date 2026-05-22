@@ -2,8 +2,8 @@
 @baseUrl = http://localhost:8080
 @contentType = application/json
 # Cole aqui os tokens obtidos em 01-autenticacao.http
-@tokenAdmin = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3YzZkZTIyZC1iZjc5LTRiYjMtOGRkMS1iZGRjNGQ5ODJjNmUiLCJlbWFpbCI6ImFkbWluQGFybWF6ZW0uY29tIiwibmFtZSI6IkFkbWluIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQWRtaW5pc3RyYWRvciIsImp0aSI6ImZhMWNkOTA2LTU0NjAtNGQ1ZC05YWE0LWIwYWVhYzUyYTFiYSIsImV4cCI6MTc3OTQzMzAxNSwiaXNzIjoiR2VzdGFvQXJtYXplbSIsImF1ZCI6Ikdlc3Rhb0FybWF6ZW0ifQ.6ITY5VvKupd5bWaL79_IHt6oIM_NsAN2ZOtEcxWa60w
-@tokenVendedor = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyN2QxMGEyYS1jNDZjLTRmNDctOTVmMC1lZTI0NjkwMTg2MDIiLCJlbWFpbCI6InZlbmRlZG9yQGFybWF6ZW0uY29tIiwibmFtZSI6IlZlbmRlZG9yIFRlc3RlIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiVmVuZGVkb3IiLCJqdGkiOiIzOWE5NWI4Ni0zY2Q0LTQwMGItODBkMy0xNmM4Yjg5NGRhZTUiLCJleHAiOjE3Nzk0MzMwMjksImlzcyI6Ikdlc3Rhb0FybWF6ZW0iLCJhdWQiOiJHZXN0YW9Bcm1hemVtIn0.xQqO94RrHy-9shjTvZh3sT55Ovb52eQwS5I1YBo6xIs
+@tokenAdmin = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+@tokenVendedor = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 # -------------------------------------------------------------------
 # PEDIDOS

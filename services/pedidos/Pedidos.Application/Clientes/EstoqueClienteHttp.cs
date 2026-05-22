@@ -11,7 +11,7 @@ public class EstoqueClienteHttp
 
     public EstoqueClienteHttp(HttpClient httpClient) => _httpClient = httpClient;
 
-    public async Task<Resultado<int>> obterQuantidadeDisponivel(
+    public virtual async Task<Resultado<int>> obterQuantidadeDisponivel(
         Guid produtoId, CancellationToken ct = default)
     {
         try

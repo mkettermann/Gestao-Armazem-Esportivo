@@ -11,7 +11,7 @@ public class CatalogoClienteHttp
 
     public CatalogoClienteHttp(HttpClient httpClient) => _httpClient = httpClient;
 
-    public async Task<Resultado<ProdutoExternoDto>> obterProdutoAsync(
+    public virtual async Task<Resultado<ProdutoExternoDto>> obterProdutoAsync(
         Guid produtoId, CancellationToken ct = default)
     {
         try

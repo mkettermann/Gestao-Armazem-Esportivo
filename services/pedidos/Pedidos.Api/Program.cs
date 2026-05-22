@@ -47,15 +47,19 @@ builder.Services.AddSingleton<IConnectionFactory>(_ =>
 builder.Services.AddScoped<IEventoPublicador, RabbitMqPublicador>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<AutenticacaoForwardHandler>();
+
+var estoqueUrl = builder.Configuration["ServicosInternos:EstoqueUrl"]
+    ?? throw new InvalidOperationException("Configuração 'ServicosInternos:EstoqueUrl' é obrigatória.");
+var catalogoUrl = builder.Configuration["ServicosInternos:CatalogoUrl"]
+    ?? throw new InvalidOperationException("Configuração 'ServicosInternos:CatalogoUrl' é obrigatória.");
+
 builder.Services.AddHttpClient<EstoqueClienteHttp>(client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["ServicosInternos:EstoqueUrl"]
-                                 ?? "http://localhost:5002");
+    client.BaseAddress = new Uri(estoqueUrl);
 }).AddHttpMessageHandler<AutenticacaoForwardHandler>();
 builder.Services.AddHttpClient<CatalogoClienteHttp>(client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["ServicosInternos:CatalogoUrl"]
-                                 ?? "http://localhost:5001");
+    client.BaseAddress = new Uri(catalogoUrl);
 }).AddHttpMessageHandler<AutenticacaoForwardHandler>();
 builder.Services.AddScoped<PedidoServico>();
 builder.Services.AddHealthChecks()

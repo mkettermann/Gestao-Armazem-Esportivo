@@ -20,7 +20,15 @@ public class EstoqueServico
     public async Task<Resultado<EntradaEstoqueRespostaDto>> adicionarEstoqueAsync(
         Guid produtoId, AdicionarEstoqueDto dto, CancellationToken ct = default)
     {
-        var entrada = EntradaEstoqueFactory.criar(produtoId, dto.quantidade, dto.numeroNotaFiscal);
+        Estoque.Domain.Entidades.EntradaEstoque entrada;
+        try
+        {
+            entrada = EntradaEstoqueFactory.criar(produtoId, dto.quantidade, dto.numeroNotaFiscal);
+        }
+        catch (Estoque.Domain.Excecoes.DomainException ex)
+        {
+            return Resultado<EntradaEstoqueRespostaDto>.Falha(ex.Message);
+        }
 
         var item = await _itemRepositorio.obterPorProdutoIdAsync(produtoId, ct);
         if (item is null)

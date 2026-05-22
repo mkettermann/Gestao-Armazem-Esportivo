@@ -25,7 +25,15 @@ public class AutenticacaoServico
         if (emailExistente is not null)
             return Resultado<UsuarioRespostaDto>.Falha("O e-mail informado já está em uso.");
 
-        var usuario = UsuarioFactory.criar(dto.nome, dto.email, dto.senha, dto.tipoUsuario);
+        Identidade.Domain.Entidades.Usuario usuario;
+        try
+        {
+            usuario = UsuarioFactory.criar(dto.nome, dto.email, dto.senha, dto.tipoUsuario);
+        }
+        catch (Identidade.Domain.Excecoes.DomainException ex)
+        {
+            return Resultado<UsuarioRespostaDto>.Falha(ex.Message);
+        }
 
         await _usuarioRepositorio.adicionarAsync(usuario, ct);
         await _usuarioRepositorio.salvarAlteracoesAsync(ct);
