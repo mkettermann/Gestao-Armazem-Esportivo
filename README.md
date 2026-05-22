@@ -49,6 +49,7 @@ As migrations do banco de dados são aplicadas automaticamente na inicializaçã
 | --- | --- |
 | [Gateway](docs/Gateway.md) | Arquitetura do proxy reverso, rotas e fluxo de requisição |
 | [Descrição do Sistema](docs/Descricao.md) | |
+| [Comunicação dos Microserviços](docs/Comunicacao.md) | Fluxo de comunicação, grafo de dependências, eventos e protocolos |
 
 ---
 
