@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using Identidade.Application.DTOs;
 using Identidade.Application.Servicos;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +8,7 @@ using Shared.Contratos.Respostas;
 namespace Identidade.Api.Controllers;
 
 [ApiController]
+[ApiVersion("1.0")]
 [Route("auth")]
 public class AutenticacaoController : ControllerBase
 {

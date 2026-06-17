@@ -17,7 +17,7 @@ namespace Pedidos.Infrastructure.Persistencia.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.16")
+                .HasAnnotation("ProductVersion", "9.0.17")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -84,6 +84,11 @@ namespace Pedidos.Infrastructure.Persistencia.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("documento_cliente");
 
+                    b.Property<string>("motivoRejeicao")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("motivo_rejeicao");
+
                     b.Property<string>("nomeVendedor")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -97,6 +102,51 @@ namespace Pedidos.Infrastructure.Persistencia.Migrations
                     b.HasKey("id");
 
                     b.ToTable("pedidos", (string)null);
+                });
+
+            modelBuilder.Entity("Pedidos.Infrastructure.Persistencia.Outbox.MensagemOutbox", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("conteudo")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("conteudo");
+
+                    b.Property<string>("exchange")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("exchange");
+
+                    b.Property<DateTime>("ocorridoEm")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("ocorrido_em");
+
+                    b.Property<DateTime?>("processadoEm")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("processado_em");
+
+                    b.Property<string>("routingKey")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("routing_key");
+
+                    b.Property<string>("tipo")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("tipo");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("processadoEm");
+
+                    b.ToTable("mensagens_outbox", (string)null);
                 });
 
             modelBuilder.Entity("Pedidos.Domain.Entidades.ItemPedido", b =>

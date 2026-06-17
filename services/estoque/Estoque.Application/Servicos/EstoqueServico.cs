@@ -1,4 +1,6 @@
 using Estoque.Application.DTOs;
+using Estoque.Application.Mensageria;
+using Estoque.Domain.Entidades;
 using Estoque.Domain.Factories;
 using Estoque.Domain.Interfaces;
 using Shared.Contratos.Resultados;
@@ -9,12 +11,15 @@ public class EstoqueServico
 {
     private readonly IItemEstoqueRepositorio _itemRepositorio;
     private readonly IEntradaEstoqueRepositorio _entradaRepositorio;
+    private readonly IEventoProcessadoRepositorio _eventosProcessados;
 
     public EstoqueServico(IItemEstoqueRepositorio itemRepositorio,
-                          IEntradaEstoqueRepositorio entradaRepositorio)
+                          IEntradaEstoqueRepositorio entradaRepositorio,
+                          IEventoProcessadoRepositorio eventosProcessados)
     {
         _itemRepositorio = itemRepositorio;
         _entradaRepositorio = entradaRepositorio;
+        _eventosProcessados = eventosProcessados;
     }
 
     public async Task<Resultado<EntradaEstoqueRespostaDto>> adicionarEstoqueAsync(
@@ -74,14 +79,43 @@ public class EstoqueServico
         });
     }
 
-    public async Task baixarEstoquePorPedidoAsync(
-        Guid produtoId, int quantidade, CancellationToken ct = default)
+    /// <summary>
+    /// Dá baixa nos itens de um pedido de forma idempotente e atômica (etapa da saga). Verifica a
+    /// disponibilidade de TODOS os itens antes de aplicar qualquer baixa (sem baixa parcial); grava
+    /// a baixa e o registro de idempotência na MESMA transação. Reentregas devolvem o resultado já
+    /// processado sem reaplicar. Retorna se o pedido foi rejeitado e o motivo.
+    /// </summary>
+    public async Task<(bool rejeitado, string? motivo)> processarBaixaPedidoAsync(
+        Guid idEvento, IReadOnlyList<ItemBaixa> itens, CancellationToken ct = default)
     {
-        var item = await _itemRepositorio.obterPorProdutoIdAsync(produtoId, ct)
-            ?? throw new InvalidOperationException(
-                $"Item de estoque não encontrado para o produto {produtoId}.");
+        var jaProcessado = await _eventosProcessados.obterAsync(idEvento, ct);
+        if (jaProcessado is not null)
+            return (jaProcessado.rejeitado, jaProcessado.motivo);
 
-        item.baixarQuantidade(quantidade);
+        var aplicar = new List<(ItemEstoque item, int quantidade)>();
+        foreach (var item in itens)
+        {
+            var estoqueItem = await _itemRepositorio.obterPorProdutoIdAsync(item.produtoId, ct);
+            if (estoqueItem is null || !estoqueItem.temEstoqueSuficiente(item.quantidade))
+            {
+                var disponivel = estoqueItem?.quantidadeDisponivel ?? 0;
+                var motivo = $"Estoque insuficiente para o produto {item.produtoId}. " +
+                             $"Disponível: {disponivel}, solicitado: {item.quantidade}.";
+
+                await _eventosProcessados.registrarAsync(idEvento, rejeitado: true, motivo, ct);
+                await _itemRepositorio.salvarAlteracoesAsync(ct);
+                return (true, motivo);
+            }
+
+            aplicar.Add((estoqueItem, item.quantidade));
+        }
+
+        foreach (var (item, quantidade) in aplicar)
+            item.baixarQuantidade(quantidade);
+
+        await _eventosProcessados.registrarAsync(idEvento, rejeitado: false, motivo: null, ct);
         await _itemRepositorio.salvarAlteracoesAsync(ct);
+
+        return (false, null);
     }
 }

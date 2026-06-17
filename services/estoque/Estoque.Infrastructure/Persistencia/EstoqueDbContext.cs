@@ -1,4 +1,5 @@
 using Estoque.Domain.Entidades;
+using Estoque.Infrastructure.Persistencia.Idempotencia;
 using Microsoft.EntityFrameworkCore;
 
 namespace Estoque.Infrastructure.Persistencia;
@@ -9,6 +10,7 @@ public class EstoqueDbContext : DbContext
 
     public DbSet<ItemEstoque> ItensEstoque => Set<ItemEstoque>();
     public DbSet<EntradaEstoque> EntradasEstoque => Set<EntradaEstoque>();
+    public DbSet<EventoProcessado> EventosProcessados => Set<EventoProcessado>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -21,6 +23,12 @@ public class EstoqueDbContext : DbContext
             e.HasIndex(i => i.produtoId).IsUnique();
             e.Property(i => i.quantidadeDisponivel).HasColumnName("quantidade_disponivel").IsRequired();
             e.Property(i => i.ultimaAtualizacao).HasColumnName("ultima_atualizacao").IsRequired();
+            // Token de concorrência otimista usando a coluna de sistema "xmin" do PostgreSQL: impede
+            // "lost update" quando baixas concorrentes tocam o mesmo item. Não cria coluna nova.
+            e.Property<uint>("xmin")
+                .HasColumnType("xid")
+                .ValueGeneratedOnAddOrUpdate()
+                .IsConcurrencyToken();
         });
 
         modelBuilder.Entity<EntradaEstoque>(e =>
@@ -33,6 +41,16 @@ public class EstoqueDbContext : DbContext
             e.Property(en => en.numeroNotaFiscal).HasColumnName("numero_nota_fiscal")
                 .HasMaxLength(100).IsRequired();
             e.Property(en => en.dataEntrada).HasColumnName("data_entrada").IsRequired();
+        });
+
+        modelBuilder.Entity<EventoProcessado>(e =>
+        {
+            e.ToTable("eventos_processados");
+            e.HasKey(ev => ev.idEvento);
+            e.Property(ev => ev.idEvento).HasColumnName("id_evento");
+            e.Property(ev => ev.rejeitado).HasColumnName("rejeitado").IsRequired();
+            e.Property(ev => ev.motivo).HasColumnName("motivo").HasMaxLength(500);
+            e.Property(ev => ev.processadoEm).HasColumnName("processado_em").IsRequired();
         });
     }
 }

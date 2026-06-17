@@ -13,6 +13,7 @@ public class Pedido
     public DateTime dataCriacao { get; private set; }
     public DateTime? dataConfirmacao { get; private set; }
     public DateTime? dataCancelamento { get; private set; }
+    public string? motivoRejeicao { get; private set; }
 
     private readonly List<ItemPedido> _itens = new();
     public IReadOnlyCollection<ItemPedido> itens => _itens.AsReadOnly();
@@ -64,6 +65,20 @@ public class Pedido
 
         status = StatusPedido.Cancelado;
         dataCancelamento = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Rejeita um pedido pendente quando o estoque não pôde ser baixado (etapa de compensação da
+    /// saga). Mantém o histórico do motivo para consulta pelo vendedor.
+    /// </summary>
+    public void rejeitar(string motivo)
+    {
+        if (status != StatusPedido.Pendente)
+            throw new DomainException("Apenas pedidos pendentes podem ser rejeitados.");
+
+        status = StatusPedido.Rejeitado;
+        dataCancelamento = DateTime.UtcNow;
+        motivoRejeicao = string.IsNullOrWhiteSpace(motivo) ? "Estoque insuficiente." : motivo.Trim();
     }
 
     public decimal calcularTotal() => _itens.Sum(i => i.subtotal);

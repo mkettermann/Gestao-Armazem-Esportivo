@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using Pedidos.Application.DTOs;
 using Pedidos.Application.Servicos;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +8,7 @@ using Shared.Contratos.Respostas;
 namespace Pedidos.Api.Controllers;
 
 [ApiController]
+[ApiVersion("1.0")]
 [Route("pedidos")]
 [Authorize]
 public class PedidoController : ControllerBase

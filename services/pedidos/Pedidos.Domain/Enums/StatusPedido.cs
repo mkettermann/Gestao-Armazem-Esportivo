@@ -4,5 +4,6 @@ public enum StatusPedido
 {
     Pendente = 1,
     Confirmado = 2,
-    Cancelado = 3
+    Cancelado = 3,
+    Rejeitado = 4
 }

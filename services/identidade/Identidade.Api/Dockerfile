@@ -10,6 +10,10 @@ RUN dotnet publish services/identidade/Identidade.Api/Identidade.Api.csproj \
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
+# curl é usado pelo healthcheck do docker-compose para sondar o endpoint /health.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
 RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
 COPY --from=build /app/publish .
 USER appuser

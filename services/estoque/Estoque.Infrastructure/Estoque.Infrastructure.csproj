@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Estoque.Application\Estoque.Application.csproj" />
     <ProjectReference Include="..\Estoque.Domain\Estoque.Domain.csproj" />
+    <ProjectReference Include="..\..\..\shared\Shared.Mensageria\Shared.Mensageria.csproj" />
   </ItemGroup>
 
   <ItemGroup>

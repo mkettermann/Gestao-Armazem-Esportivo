@@ -14,7 +14,12 @@ public static class AutenticacaoExtensoes
         this IServiceCollection servicos,
         IConfiguration config)
     {
-        var chave = Encoding.UTF8.GetBytes(config["JWT:Chave"]!);
+        var chaveTexto = config["JWT:Chave"]
+            ?? throw new InvalidOperationException("Configuração 'JWT:Chave' é obrigatória.");
+        if (chaveTexto.Length < 32)
+            throw new InvalidOperationException(
+                "Configuração 'JWT:Chave' deve ter ao menos 32 caracteres para garantir a segurança da assinatura.");
+        var chave = Encoding.UTF8.GetBytes(chaveTexto);
 
         servicos
             .AddAuthentication(options =>

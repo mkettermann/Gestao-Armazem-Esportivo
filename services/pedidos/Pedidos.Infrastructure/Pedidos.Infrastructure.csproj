@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Pedidos.Application\Pedidos.Application.csproj" />
     <ProjectReference Include="..\Pedidos.Domain\Pedidos.Domain.csproj" />
+    <ProjectReference Include="..\..\..\shared\Shared.Mensageria\Shared.Mensageria.csproj" />
   </ItemGroup>
 
   <ItemGroup>
