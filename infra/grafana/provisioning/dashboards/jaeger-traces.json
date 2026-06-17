@@ -18,7 +18,7 @@
 			"tags": [],
 			"targetBlank": true,
 			"title": "Abrir Jaeger UI",
-			"tooltip": "Acesso direto à interface do Jaeger",
+			"tooltip": "Acesso direto ao Jaeger",
 			"type": "link",
 			"url": "http://localhost:16686"
 		}

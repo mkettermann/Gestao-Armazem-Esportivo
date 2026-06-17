@@ -33,3 +33,4 @@ Authorization: Bearer {{tokenVendedor}}
 # Substitua o GUID pelo id retornado em "Emitir pedido"
 GET {{baseUrl}}/pedidos/89bdf3fa-d6a3-4315-b42f-0bcbe7067afa
 Authorization: Bearer {{tokenAdmin}}
+
