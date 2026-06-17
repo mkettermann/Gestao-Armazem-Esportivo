@@ -50,6 +50,7 @@ As migrations do banco de dados são aplicadas automaticamente na inicializaçã
 | [Decisões Técnicas](docs/Decisoes.md) | Decisões de arquitetura e design (ADR) com contexto e trade-offs |
 | [Comunicação dos Microserviços](docs/Comunicacao.md) | Fluxo da saga, eventos, outbox, idempotência e propagação de trace |
 | [Gateway](docs/Gateway.md) | Arquitetura do proxy reverso, rotas e fluxo de requisição |
+| [Tecnologias Utilizadas](docs/Tecnologias.md) | Stack completa: frameworks, bibliotecas, versões e ferramentas |
 | [Descrição do Sistema](docs/Descricao.md) | Enunciado do teste: histórias de usuário (H1–H5) e requisitos |
 
 ---
