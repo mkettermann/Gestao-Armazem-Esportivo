@@ -54,3 +54,4 @@ Authorization: Bearer {{tokenAdmin}}
 # Substitua o GUID pelo id do produto
 DELETE {{baseUrl}}/produtos/543204a9-4f5d-40be-b2c1-dc3c3c227284
 Authorization: Bearer {{tokenAdmin}}
+
