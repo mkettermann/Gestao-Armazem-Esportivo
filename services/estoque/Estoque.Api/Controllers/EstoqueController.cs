@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using Estoque.Application.DTOs;
 using Estoque.Application.Servicos;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +8,7 @@ using Shared.Contratos.Respostas;
 namespace Estoque.Api.Controllers;
 
 [ApiController]
+[ApiVersion("1.0")]
 [Route("estoque")]
 [Authorize]
 public class EstoqueController : ControllerBase

@@ -1,6 +1,13 @@
 <Project>
+  <PropertyGroup>
+    <!-- Qualidade de build padronizada para todos os projetos. -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- Avisos de auditoria de vulnerabilidade do NuGet não devem quebrar o build (informativos). -->
+    <WarningsNotAsErrors>NU1901;NU1902;NU1903;NU1904</WarningsNotAsErrors>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Update="Microsoft.EntityFrameworkCore" Version="9.0.16" />
-    <PackageReference Update="Microsoft.EntityFrameworkCore.Relational" Version="9.0.16" />
+    <PackageReference Update="Microsoft.EntityFrameworkCore" Version="9.0.17" />
+    <PackageReference Update="Microsoft.EntityFrameworkCore.Relational" Version="9.0.17" />
   </ItemGroup>
 </Project>

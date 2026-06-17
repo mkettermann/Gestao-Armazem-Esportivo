@@ -30,6 +30,7 @@ public sealed class PedidoRespostaDto
     public string status { get; init; } = string.Empty;
     public DateTime dataCriacao { get; init; }
     public DateTime? dataConfirmacao { get; init; }
+    public string? motivoRejeicao { get; init; }
     public IEnumerable<ItemPedidoRespostaDto> itens { get; init; } = [];
     public decimal valorTotal { get; init; }
 }

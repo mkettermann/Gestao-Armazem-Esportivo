@@ -17,7 +17,7 @@ namespace Estoque.Infrastructure.Persistencia.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.16")
+                .HasAnnotation("ProductVersion", "9.0.17")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -71,12 +71,43 @@ namespace Estoque.Infrastructure.Persistencia.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("ultima_atualizacao");
 
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("id");
 
                     b.HasIndex("produtoId")
                         .IsUnique();
 
                     b.ToTable("itens_estoque", (string)null);
+                });
+
+            modelBuilder.Entity("Estoque.Infrastructure.Persistencia.Idempotencia.EventoProcessado", b =>
+                {
+                    b.Property<Guid>("idEvento")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id_evento");
+
+                    b.Property<string>("motivo")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("motivo");
+
+                    b.Property<DateTime>("processadoEm")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("processado_em");
+
+                    b.Property<bool>("rejeitado")
+                        .HasColumnType("boolean")
+                        .HasColumnName("rejeitado");
+
+                    b.HasKey("idEvento");
+
+                    b.ToTable("eventos_processados", (string)null);
                 });
 #pragma warning restore 612, 618
         }

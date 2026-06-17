@@ -1,4 +1,8 @@
+using Asp.Versioning;
+using FluentValidation;
+using Identidade.Application.DTOs;
 using Identidade.Application.Servicos;
+using Identidade.Application.Validadores;
 using Identidade.Domain.Excecoes;
 using Identidade.Domain.Interfaces;
 using Identidade.Infrastructure.Persistencia;
@@ -16,9 +20,25 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<IdempotencyFilter>();
-builder.Services.AddControllers(opts => opts.Filters.AddService<IdempotencyFilter>())
+builder.Services.AddScoped<ValidacaoModeloFilter>();
+builder.Services.AddScoped<IValidator<CadastrarUsuarioDto>, CadastrarUsuarioDtoValidador>();
+builder.Services.AddScoped<IValidator<LoginDto>, LoginDtoValidador>();
+builder.Services.AddControllers(opts =>
+{
+    opts.Filters.AddService<ValidacaoModeloFilter>();
+    opts.Filters.AddService<IdempotencyFilter>();
+})
     .AddJsonOptions(opts =>
         opts.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()));
+builder.Services.AddApiVersioning(opcoes =>
+{
+    opcoes.DefaultApiVersion = new ApiVersion(1, 0);
+    opcoes.AssumeDefaultVersionWhenUnspecified = true;
+    opcoes.ReportApiVersions = true;
+    opcoes.ApiVersionReader = ApiVersionReader.Combine(
+        new HeaderApiVersionReader("X-Api-Version"),
+        new QueryStringApiVersionReader("api-version"));
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -41,6 +61,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.adicionarAutenticacaoJwt(builder.Configuration);
+builder.Services.adicionarCorsPadrao(builder.Configuration);
 
 builder.Services.AddDbContext<IdentidadeDbContext>(opts =>
     opts.UseNpgsql(builder.Configuration.GetConnectionString("Identidade")));
@@ -57,6 +78,7 @@ builder.Services.AddOpenTelemetry()
     .WithTracing(tracing => tracing
         .AddAspNetCoreInstrumentation()
         .AddHttpClientInstrumentation()
+        .AddSource("Npgsql")
         .AddOtlpExporter(opts => opts.Endpoint = new Uri(
             builder.Configuration["Observabilidade:OtlpEndpoint"] ?? "http://localhost:4317")))
     .WithMetrics(metrics => metrics
@@ -77,6 +99,15 @@ app.UseExceptionHandler(errorApp => errorApp.Run(async context =>
         UnauthorizedAccessException => (401, "Acesso não autorizado."),
         _ => (500, "Ocorreu um erro interno. Tente novamente mais tarde.")
     };
+
+    if (status == 500 && feature?.Error is { } excecao)
+    {
+        var logger = context.RequestServices.GetRequiredService<ILoggerFactory>()
+            .CreateLogger("TratamentoExcecoes");
+        logger.LogError(excecao, "Erro não tratado em {Metodo} {Caminho}.",
+            context.Request.Method, context.Request.Path);
+    }
+
     context.Response.StatusCode = status;
     await context.Response.WriteAsJsonAsync(RespostaApi.Erro(mensagem));
 }));
@@ -85,17 +116,22 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.MapHealthChecks("/health");
+app.UseCors(CorsExtensoes.PoliticaPadrao);
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-using (var scope = app.Services.CreateScope())
+if (!app.Environment.IsEnvironment("Testing"))
 {
+    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<IdentidadeDbContext>();
     db.Database.Migrate();
 }
 
 app.Run();
+
+// Exposto para os testes de integração (WebApplicationFactory<Program>).
+public partial class Program { }
 
 
 

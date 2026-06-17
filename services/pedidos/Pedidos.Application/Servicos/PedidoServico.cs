@@ -1,5 +1,6 @@
 using Pedidos.Application.Clientes;
 using Pedidos.Application.DTOs;
+using Pedidos.Application.Mensageria;
 using Pedidos.Domain.Entidades;
 using Pedidos.Domain.Factories;
 using Pedidos.Domain.Interfaces;
@@ -8,28 +9,22 @@ using Shared.Contratos.Resultados;
 
 namespace Pedidos.Application.Servicos;
 
-public interface IEventoPublicador
-{
-    Task publicarAsync<T>(T evento, string exchange, string routingKey,
-                          CancellationToken ct = default);
-}
-
 public class PedidoServico
 {
     private readonly IPedidoRepositorio _pedidoRepositorio;
     private readonly EstoqueClienteHttp _estoqueCliente;
     private readonly CatalogoClienteHttp _catalogoCliente;
-    private readonly IEventoPublicador _publicador;
+    private readonly IOutboxRepositorio _outbox;
 
     public PedidoServico(IPedidoRepositorio pedidoRepositorio,
                          EstoqueClienteHttp estoqueCliente,
                          CatalogoClienteHttp catalogoCliente,
-                         IEventoPublicador publicador)
+                         IOutboxRepositorio outbox)
     {
         _pedidoRepositorio = pedidoRepositorio;
         _estoqueCliente = estoqueCliente;
         _catalogoCliente = catalogoCliente;
-        _publicador = publicador;
+        _outbox = outbox;
     }
 
     public async Task<Resultado<PedidoRespostaDto>> emitirAsync(
@@ -38,7 +33,8 @@ public class PedidoServico
         if (dto.itens is null || !dto.itens.Any())
             return Resultado<PedidoRespostaDto>.Falha("O pedido deve conter ao menos um item.");
 
-        // Consulta catálogo e valida estoque de todos os itens antes de criar o pedido
+        // Pré-validação síncrona: dá feedback imediato (H5) no caso comum de estoque insuficiente.
+        // A baixa autoritativa e a confirmação do pedido ocorrem na saga assíncrona com o Estoque.
         var produtosConsultados = new Dictionary<Guid, ProdutoExternoDto>();
 
         foreach (var item in dto.itens)
@@ -67,15 +63,11 @@ public class PedidoServico
             pedido.adicionarItem(item.produtoId, produto.nome, produto.preco, item.quantidade);
         }
 
-        pedido.confirmar();
-
-        await _pedidoRepositorio.adicionarAsync(pedido, ct);
-        await _pedidoRepositorio.salvarAlteracoesAsync(ct);
-
-        var evento = new PedidoConfirmadoEvento
+        // O pedido nasce Pendente; só vira Confirmado quando o Estoque confirmar a baixa (saga).
+        var evento = new PedidoRegistradoEvento
         {
             pedidoId = pedido.id,
-            dataConfirmacao = pedido.dataConfirmacao!.Value,
+            dataRegistro = pedido.dataCriacao,
             itens = dto.itens.Select(i => new ItemPedidoEvento
             {
                 produtoId = i.produtoId,
@@ -83,8 +75,11 @@ public class PedidoServico
             }).ToList()
         };
 
-        await _publicador.publicarAsync(evento, "pedidos.events",
-                                        "pedidos.pedido.confirmado", ct);
+        // Pedido + mensagem de outbox gravados na MESMA transação (sem dual-write).
+        await _pedidoRepositorio.adicionarAsync(pedido, ct);
+        await _outbox.adicionarAsync(evento, RotasMensageria.ExchangePedidos,
+                                     RotasMensageria.RoutingPedidoRegistrado, ct);
+        await _pedidoRepositorio.salvarAlteracoesAsync(ct);
 
         return Resultado<PedidoRespostaDto>.Sucesso(mapear(pedido));
     }
@@ -107,6 +102,7 @@ public class PedidoServico
         status = p.status.ToString(),
         dataCriacao = p.dataCriacao,
         dataConfirmacao = p.dataConfirmacao,
+        motivoRejeicao = p.motivoRejeicao,
         itens = p.itens.Select(i => new ItemPedidoRespostaDto
         {
             produtoId = i.produtoId,

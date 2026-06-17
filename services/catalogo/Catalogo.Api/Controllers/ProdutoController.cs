@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using Catalogo.Application.DTOs;
 using Catalogo.Application.Servicos;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +8,7 @@ using Shared.Contratos.Respostas;
 namespace Catalogo.Api.Controllers;
 
 [ApiController]
+[ApiVersion("1.0")]
 [Route("produtos")]
 [Authorize]
 public class ProdutoController : ControllerBase

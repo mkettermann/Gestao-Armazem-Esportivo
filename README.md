@@ -47,9 +47,10 @@ As migrations do banco de dados são aplicadas automaticamente na inicializaçã
 
 | Documento | Descrição |
 | --- | --- |
+| [Decisões Técnicas](docs/Decisoes.md) | Decisões de arquitetura e design (ADR) com contexto e trade-offs |
+| [Comunicação dos Microserviços](docs/Comunicacao.md) | Fluxo da saga, eventos, outbox, idempotência e propagação de trace |
 | [Gateway](docs/Gateway.md) | Arquitetura do proxy reverso, rotas e fluxo de requisição |
-| [Descrição do Sistema](docs/Descricao.md) | |
-| [Comunicação dos Microserviços](docs/Comunicacao.md) | Fluxo de comunicação, grafo de dependências, eventos e protocolos |
+| [Descrição do Sistema](docs/Descricao.md) | Enunciado do teste: histórias de usuário (H1–H5) e requisitos |
 
 ---
 
@@ -222,7 +223,13 @@ Content-Type: application/json
 }
 ```
 
-O pedido é confirmado, o estoque é debitado assincronamente via RabbitMQ e o evento `PedidoConfirmadoEvento` é publicado.
+O pedido é criado com status **`Pendente`** e, de forma atômica, um evento `PedidoRegistradoEvento`
+é gravado no **outbox** (sem *dual-write*). O serviço de Estoque dá baixa de forma **idempotente** e
+responde pela saga: o pedido passa a **`Confirmado`** (baixa efetuada) ou **`Rejeitado`** (estoque
+insuficiente, com `motivoRejeicao`). Acompanhe o desfecho consultando o pedido por ID (passo 11).
+
+> Esse desenho elimina venda além do disponível (*overselling*) e baixa em duplicidade. Detalhes em
+> [docs/Comunicacao.md](docs/Comunicacao.md) e [docs/Decisoes.md](docs/Decisoes.md).
 
 ### 11. Consultar um pedido por ID
 
@@ -286,6 +293,48 @@ curl http://localhost:5002/health
 curl http://localhost:5003/health
 curl http://localhost:5004/health
 ```
+
+---
+
+## Padrão de Respostas (Facade)
+
+Toda resposta usa o mesmo envelope, em sucesso e em erro:
+
+```json
+{
+  "sucesso": true,
+  "mensagem": "Operação realizada com sucesso.",
+  "dados": { }
+}
+```
+
+Erros (validação, regra de negócio, autenticação) retornam `sucesso: false` e `mensagem` em
+português acentuado, com o status HTTP apropriado (400 validação/negócio, 401/403 autenticação/
+autorização, 404 não encontrado, 422 estoque insuficiente, 500 erro interno).
+
+## Idempotência
+
+Os endpoints de escrita aceitam o header opcional **`Idempotency-Key`** (UUID). Requisições repetidas
+com a mesma chave retornam a resposta memorizada (header `X-Idempotent-Replayed: true`), evitando
+efeitos duplicados em *retries* do cliente.
+
+```http
+POST http://localhost:8080/pedidos
+Authorization: Bearer <token>
+Idempotency-Key: 3f1a7c64-2b9e-4d7a-9c1e-1c2f3a4b5c6d
+Content-Type: application/json
+```
+
+## Swagger / OpenAPI
+
+Cada serviço expõe Swagger UI (inclui o botão **Authorize** para o token JWT):
+
+| Serviço | Swagger |
+|---|---|
+| Identidade | <http://localhost:5001/swagger> |
+| Catálogo | <http://localhost:5002/swagger> |
+| Estoque | <http://localhost:5003/swagger> |
+| Pedidos | <http://localhost:5004/swagger> |
 
 ---
 
